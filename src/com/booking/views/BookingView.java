@@ -171,6 +171,7 @@ public class BookingView extends JFrame {
         btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btn.setBackground(bgColor);
         btn.setForeground(Color.WHITE);
+        btn.setOpaque(true);
         btn.setFocusPainted(false);
         btn.setBorderPainted(false);
         btn.setPreferredSize(new Dimension(150, 35));
