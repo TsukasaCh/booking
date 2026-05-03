@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+*** GENERATED FROM project.xml - DO NOT EDIT  ***
+***         EDIT ../build.xml INSTEAD         ***
+-->
+<project name="AppBooking-impl" default="default" basedir="..">
+    <fail message="Please build using Ant 1.8.0 or higher.">
+        <condition>
+            <not>
+                <antversion atleast="1.8.0"/>
+            </not>
+        </condition>
+    </fail>
+
+    <property file="nbproject/private/config.properties"/>
+    <property file="nbproject/private/private.properties"/>
+    <property file="nbproject/project.properties"/>
+
+    <property name="build.dir"              value="build"/>
+    <property name="build.classes.dir"      value="${build.dir}/classes"/>
+    <property name="dist.dir"               value="dist"/>
+    <property name="dist.jar"               value="${dist.dir}/AppBooking.jar"/>
+    <property name="src.dir"                value="src"/>
+    <property name="test.src.dir"           value="test"/>
+    <property name="main.class"             value="com.booking.main.AppBooking"/>
+    <property name="javac.source"           value="11"/>
+    <property name="javac.target"           value="11"/>
+    <property name="source.encoding"        value="UTF-8"/>
+    <property name="manifest.file"          value="manifest.mf"/>
+    <property name="javac.classpath"        value=""/>
+    <property name="run.classpath"          value="${build.classes.dir}"/>
+    <property name="run.jvmargs"            value=""/>
+
+    <!-- ========== STUB TARGETS (needed by NetBeans IDE) ========== -->
+    <target name="-pre-init"/>
+    <target name="-init-private"/>
+    <target name="-init-userdir"/>
+    <target name="-init-user"/>
+    <target name="-init-project"/>
+    <target name="-do-init"/>
+    <target name="-post-init"/>
+    <target name="-init-check"/>
+    <target name="-init-macrodef-property"/>
+    <target name="-init-macrodef-javac"/>
+    <target name="-init-macrodef-test"/>
+    <target name="-init-macrodef-junit"/>
+    <target name="-init-macrodef-junit-debug"/>
+    <target name="-init-macrodef-testng"/>
+    <target name="-init-macrodef-testng-debug"/>
+    <target name="-pre-pre-compile"/>
+    <target name="-pre-compile"/>
+    <target name="-post-compile"/>
+    <target name="-pre-compile-test"/>
+    <target name="-post-compile-test"/>
+    <target name="-pre-run"/>
+    <target name="-post-run"/>
+    <target name="-pre-clean"/>
+    <target name="-post-clean"/>
+    <target name="-pre-jar"/>
+    <target name="-post-jar"/>
+    <target name="-do-jar-without-manifest"/>
+    <target name="-do-jar-with-manifest"/>
+    <target name="-do-jar-with-mainclass"/>
+    <target name="-do-jar-with-libraries"/>
+
+    <!-- ========== INIT ========== -->
+    <target name="-init"
+            depends="-pre-init,-init-private,-init-userdir,-init-user,-init-project,-do-init,-post-init">
+    </target>
+
+    <!-- ========== COMPILE ========== -->
+    <target name="-do-compile" depends="-init,-pre-pre-compile,-pre-compile">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac
+            srcdir="${src.dir}"
+            destdir="${build.classes.dir}"
+            source="${javac.source}"
+            target="${javac.target}"
+            encoding="${source.encoding}"
+            debug="true"
+            deprecation="${javac.deprecation}"
+            includeantruntime="false">
+            <classpath>
+                <pathelement path="${javac.classpath}"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="compile" depends="-init,-pre-pre-compile,-pre-compile,-do-compile,-post-compile"
+            description="Compile project sources.">
+    </target>
+
+    <!-- ========== JAR ========== -->
+    <target name="-do-jar" depends="compile,-pre-jar">
+        <mkdir dir="${dist.dir}"/>
+        <jar destfile="${dist.jar}">
+            <fileset dir="${build.classes.dir}"/>
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="jar" depends="-do-jar,-post-jar"
+            description="Build JAR.">
+    </target>
+
+    <!-- ========== RUN ========== -->
+    <target name="-do-run" depends="compile,-pre-run">
+        <java classname="${main.class}" fork="true">
+            <classpath>
+                <pathelement path="${run.classpath}"/>
+            </classpath>
+            <jvmarg line="${run.jvmargs}"/>
+        </java>
+    </target>
+
+    <target name="run" depends="-do-run,-post-run"
+            description="Run project.">
+    </target>
+
+    <!-- ========== CLEAN ========== -->
+    <target name="-do-clean" depends="-init,-pre-clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <target name="clean" depends="-do-clean,-post-clean"
+            description="Clean build products.">
+    </target>
+
+    <!-- ========== TEST (stubs) ========== -->
+    <target name="compile-test" depends="compile"/>
+    <target name="test"         depends="compile"/>
+    <target name="test-single"  depends="compile"/>
+
+    <!-- ========== DEBUG (stubs) ========== -->
+    <target name="debug"        depends="compile"/>
+    <target name="debug-single" depends="compile"/>
+    <target name="debug-test"   depends="compile"/>
+
+    <!-- ========== JAVADOC (stub) ========== -->
+    <target name="javadoc"      depends="compile"/>
+
+    <!-- ========== PROFILE (stubs) ========== -->
+    <target name="profile"             depends="compile"/>
+    <target name="profile-single"      depends="compile"/>
+    <target name="profile-test-single" depends="compile"/>
+
+    <!-- ========== DEFAULT ========== -->
+    <target name="default" depends="run"/>
+
+</project>
