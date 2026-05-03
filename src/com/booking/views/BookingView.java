@@ -224,6 +224,9 @@ public class BookingView extends javax.swing.JFrame {
         btnBooking.setBackground(new java.awt.Color(39, 174, 96));
         btnBooking.setForeground(new java.awt.Color(255, 255, 255));
         btnBooking.setText("Booking Sekarang");
+        btnBooking.setOpaque(true);
+        btnBooking.setBorderPainted(false);
+        btnBooking.setFocusPainted(false);
         btnBooking.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnBookingActionPerformed(evt);
@@ -233,6 +236,9 @@ public class BookingView extends javax.swing.JFrame {
         btnReset.setBackground(new java.awt.Color(192, 57, 43));
         btnReset.setForeground(new java.awt.Color(255, 255, 255));
         btnReset.setText("Reset");
+        btnReset.setOpaque(true);
+        btnReset.setBorderPainted(false);
+        btnReset.setFocusPainted(false);
         btnReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnResetActionPerformed(evt);
