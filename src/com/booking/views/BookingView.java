@@ -3,104 +3,262 @@ package com.booking.views;
 import com.booking.models.Booking;
 import com.booking.models.KelasMasak;
 import com.booking.models.Peserta;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.table.DefaultTableModel;
 
-public class BookingView extends javax.swing.JFrame {
+public class BookingView extends JFrame {
 
-    private List<KelasMasak> daftarKelas;
-    private List<Booking> daftarBooking;
-    private DefaultTableModel modelKelas;
-    private DefaultTableModel modelBooking;
+    private final List<KelasMasak> daftarKelas;
+    private final List<Booking> daftarBooking;
+
+    private JTextField txtNama, txtTelepon, txtEmail;
+    private JComboBox<KelasMasak> cmbKelas;
+    private JLabel lblMenu, lblJadwal, lblKuota;
+    private JTable tblKelas, tblBooking;
+    private DefaultTableModel modelKelas, modelBooking;
 
     public BookingView() {
-        initComponents();
-        initData();
-        setLocationRelativeTo(null);
+        daftarKelas = initKelas();
+        daftarBooking = new ArrayList<>();
+        initUI();
+        refreshTabelKelas();
     }
 
-    private void initData() {
-        daftarKelas = new ArrayList<>();
-        daftarKelas.add(new KelasMasak("A", "Paket Pasta & Pizza",
+    private List<KelasMasak> initKelas() {
+        List<KelasMasak> list = new ArrayList<>();
+        list.add(new KelasMasak("A", "Paket Pasta & Pizza",
                 new String[]{"Spaghetti Carbonara", "Fettuccine Alfredo", "Pizza Margherita"},
                 LocalDate.of(2026, 4, 10), 5));
-        daftarKelas.add(new KelasMasak("B", "Paket Sushi & Ramen",
+        list.add(new KelasMasak("B", "Paket Sushi & Ramen",
                 new String[]{"Salmon Sushi Roll", "Miso Ramen", "Gyoza"},
                 LocalDate.of(2026, 4, 15), 3));
-        daftarKelas.add(new KelasMasak("C", "Paket Dessert",
+        list.add(new KelasMasak("C", "Paket Dessert",
                 new String[]{"Tiramisu", "Creme Brulee", "Chocolate Lava Cake"},
                 LocalDate.of(2026, 4, 20), 4));
+        return list;
+    }
 
-        daftarBooking = new ArrayList<>();
+    private void initUI() {
+        setTitle("Booking Kelas Memasak");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(900, 700);
+        setLocationRelativeTo(null);
+        setResizable(false);
 
-        for (KelasMasak k : daftarKelas) {
-            cmbKelas.addItem(k);
-        }
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+        mainPanel.setBackground(new Color(245, 245, 250));
 
-        modelKelas = new DefaultTableModel(
-                new Object[]{"Kode", "Nama Paket", "Jadwal", "Kuota"}, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        tblKelas.setModel(modelKelas);
+        mainPanel.add(createHeader(), BorderLayout.NORTH);
+        mainPanel.add(createCenterPanel(), BorderLayout.CENTER);
+        mainPanel.add(createBottomPanel(), BorderLayout.SOUTH);
 
-        modelBooking = new DefaultTableModel(
-                new Object[]{"ID", "Nama", "Kelas", "Menu", "Tanggal", "Sisa Kuota"}, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        tblBooking.setModel(modelBooking);
+        setContentPane(mainPanel);
+    }
 
-        refreshTabelKelas();
+    private JPanel createHeader() {
+        JPanel header = new JPanel();
+        header.setBackground(new Color(52, 73, 94));
+        header.setPreferredSize(new Dimension(0, 60));
+        header.setLayout(new GridBagLayout());
+
+        JLabel title = new JLabel("BOOKING KELAS MEMASAK");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        title.setForeground(Color.WHITE);
+        header.add(title);
+
+        return header;
+    }
+
+    private JPanel createCenterPanel() {
+        JPanel center = new JPanel(new GridLayout(1, 2, 10, 0));
+        center.setOpaque(false);
+        center.add(createFormPanel());
+        center.add(createKelasPanel());
+        return center;
+    }
+
+    private JPanel createFormPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Color.WHITE);
+        TitledBorder border = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(52, 73, 94), 1), "Form Booking");
+        border.setTitleFont(new Font("Segoe UI", Font.BOLD, 14));
+        panel.setBorder(border);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(6, 10, 6, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        Font labelFont = new Font("Segoe UI", Font.PLAIN, 13);
+        Font fieldFont = new Font("Segoe UI", Font.PLAIN, 13);
+
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0;
+        JLabel lbl1 = new JLabel("Nama Peserta:"); lbl1.setFont(labelFont);
+        panel.add(lbl1, gbc);
+        gbc.gridx = 1; gbc.weightx = 1;
+        txtNama = new JTextField(15); txtNama.setFont(fieldFont);
+        panel.add(txtNama, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0;
+        JLabel lbl2 = new JLabel("No. Telepon:"); lbl2.setFont(labelFont);
+        panel.add(lbl2, gbc);
+        gbc.gridx = 1; gbc.weightx = 1;
+        txtTelepon = new JTextField(15); txtTelepon.setFont(fieldFont);
+        panel.add(txtTelepon, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0;
+        JLabel lbl3 = new JLabel("Email:"); lbl3.setFont(labelFont);
+        panel.add(lbl3, gbc);
+        gbc.gridx = 1; gbc.weightx = 1;
+        txtEmail = new JTextField(15); txtEmail.setFont(fieldFont);
+        panel.add(txtEmail, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0;
+        JLabel lbl4 = new JLabel("Pilih Kelas:"); lbl4.setFont(labelFont);
+        panel.add(lbl4, gbc);
+        gbc.gridx = 1; gbc.weightx = 1;
+        cmbKelas = new JComboBox<>(daftarKelas.toArray(new KelasMasak[0]));
+        cmbKelas.setFont(fieldFont);
+        cmbKelas.addActionListener(e -> updateDetailKelas());
+        panel.add(cmbKelas, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
+        JPanel detailPanel = new JPanel(new GridLayout(3, 1, 0, 4));
+        detailPanel.setBackground(new Color(248, 249, 250));
+        detailPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                new EmptyBorder(8, 10, 8, 10)));
+
+        lblMenu   = new JLabel(); lblMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblJadwal = new JLabel(); lblJadwal.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblKuota  = new JLabel(); lblKuota.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        detailPanel.add(lblMenu);
+        detailPanel.add(lblJadwal);
+        detailPanel.add(lblKuota);
+        panel.add(detailPanel, gbc);
+        gbc.gridwidth = 1;
+
+        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2;
+        gbc.insets = new Insets(15, 10, 6, 10);
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        btnPanel.setOpaque(false);
+
+        JButton btnBooking = createStyledButton("Booking Sekarang", new Color(39, 174, 96));
+        btnBooking.addActionListener(e -> prosesBooking());
+        JButton btnReset = createStyledButton("Reset", new Color(192, 57, 43));
+        btnReset.addActionListener(e -> resetForm());
+
+        btnPanel.add(btnBooking);
+        btnPanel.add(btnReset);
+        panel.add(btnPanel, gbc);
+
         updateDetailKelas();
+        return panel;
+    }
+
+    private JButton createStyledButton(String text, Color bgColor) {
+        JButton btn = new JButton(text);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        btn.setBackground(bgColor);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        btn.setPreferredSize(new Dimension(150, 35));
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
+
+    private JPanel createKelasPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
+        TitledBorder border = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(52, 73, 94), 1), "Daftar Kelas");
+        border.setTitleFont(new Font("Segoe UI", Font.BOLD, 14));
+        panel.setBorder(border);
+
+        String[] kolom = {"Kode", "Nama Paket", "Jadwal", "Kuota"};
+        modelKelas = new DefaultTableModel(kolom, 0) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+        tblKelas = new JTable(modelKelas);
+        tblKelas.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        tblKelas.setRowHeight(28);
+        tblKelas.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+        tblKelas.getTableHeader().setBackground(new Color(52, 73, 94));
+        tblKelas.getTableHeader().setForeground(Color.WHITE);
+
+        DefaultTableCellRenderer center = new DefaultTableCellRenderer();
+        center.setHorizontalAlignment(JLabel.CENTER);
+        tblKelas.getColumnModel().getColumn(0).setCellRenderer(center);
+        tblKelas.getColumnModel().getColumn(2).setCellRenderer(center);
+        tblKelas.getColumnModel().getColumn(3).setCellRenderer(center);
+
+        panel.add(new JScrollPane(tblKelas), BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel createBottomPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
+        panel.setPreferredSize(new Dimension(0, 200));
+        TitledBorder border = BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(52, 73, 94), 1), "Riwayat Booking");
+        border.setTitleFont(new Font("Segoe UI", Font.BOLD, 14));
+        panel.setBorder(border);
+
+        String[] kolom = {"ID", "Nama Peserta", "Kelas", "Menu", "Tanggal", "Sisa Kuota"};
+        modelBooking = new DefaultTableModel(kolom, 0) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+        tblBooking = new JTable(modelBooking);
+        tblBooking.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        tblBooking.setRowHeight(25);
+        tblBooking.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+        tblBooking.getTableHeader().setBackground(new Color(52, 73, 94));
+        tblBooking.getTableHeader().setForeground(Color.WHITE);
+
+        panel.add(new JScrollPane(tblBooking), BorderLayout.CENTER);
+        return panel;
     }
 
     private void updateDetailKelas() {
         KelasMasak kelas = (KelasMasak) cmbKelas.getSelectedItem();
         if (kelas != null) {
-            lblMenu.setText(kelas.getMenuString());
-            lblJadwal.setText(kelas.getJadwalFormatted());
-            lblKuota.setText(kelas.getStatusKuota());
+            lblMenu.setText("Menu: " + kelas.getMenuString());
+            lblJadwal.setText("Jadwal: " + kelas.getJadwalFormatted());
+            lblKuota.setText("Kuota: " + kelas.getStatusKuota());
             lblKuota.setForeground(kelas.isKuotaTersedia()
-                    ? new java.awt.Color(0, 153, 0)
-                    : new java.awt.Color(204, 0, 0));
+                    ? new Color(39, 174, 96) : new Color(192, 57, 43));
         }
     }
 
     private void prosesBooking() {
-        String nama = txtNama.getText().trim();
+        String nama    = txtNama.getText().trim();
         String telepon = txtTelepon.getText().trim();
-        String email = txtEmail.getText().trim();
+        String email   = txtEmail.getText().trim();
 
-        if (nama.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Nama peserta harus diisi!", "Validasi", javax.swing.JOptionPane.ERROR_MESSAGE);
-            txtNama.requestFocus();
-            return;
-        }
-        if (telepon.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "No. telepon harus diisi!", "Validasi", javax.swing.JOptionPane.ERROR_MESSAGE);
-            txtTelepon.requestFocus();
-            return;
-        }
-        if (email.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Email harus diisi!", "Validasi", javax.swing.JOptionPane.ERROR_MESSAGE);
-            txtEmail.requestFocus();
-            return;
-        }
+        if (nama.isEmpty())    { showError("Nama peserta harus diisi!"); txtNama.requestFocus(); return; }
+        if (telepon.isEmpty()) { showError("No. telepon harus diisi!"); txtTelepon.requestFocus(); return; }
+        if (email.isEmpty())   { showError("Email harus diisi!"); txtEmail.requestFocus(); return; }
 
         KelasMasak kelas = (KelasMasak) cmbKelas.getSelectedItem();
         if (kelas == null) return;
 
         if (!kelas.isKuotaTersedia()) {
-            String pesan = "=== GAGAL ===\n\nMaaf, kuota kelas " + kelas.getNamaPaket()
-                    + " sudah penuh!\nSilakan pilih kelas lain.";
-            javax.swing.JOptionPane.showMessageDialog(this, pesan, "Booking Gagal", javax.swing.JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "=== GAGAL ===\n\nMaaf, kuota kelas " + kelas.getNamaPaket()
+                    + " sudah penuh!\nSilakan pilih kelas lain.",
+                    "Booking Gagal", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -110,331 +268,33 @@ public class BookingView extends javax.swing.JFrame {
         daftarBooking.add(booking);
 
         modelBooking.addRow(new Object[]{
-            booking.getBookingId(),
-            peserta.getNama(),
-            kelas.getNamaPaket(),
-            kelas.getMenuString(),
-            kelas.getJadwalFormatted(),
-            kelas.getKuotaTersisa()
+            booking.getBookingId(), peserta.getNama(), kelas.getNamaPaket(),
+            kelas.getMenuString(), kelas.getJadwalFormatted(), kelas.getKuotaTersisa()
         });
 
         refreshTabelKelas();
         updateDetailKelas();
-
-        javax.swing.JOptionPane.showMessageDialog(this, booking.getRingkasan(),
-                "Booking Berhasil", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, booking.getRingkasan(), "Booking Berhasil", JOptionPane.INFORMATION_MESSAGE);
         resetForm();
     }
 
     private void refreshTabelKelas() {
         modelKelas.setRowCount(0);
-        for (KelasMasak kelas : daftarKelas) {
+        for (KelasMasak k : daftarKelas) {
             modelKelas.addRow(new Object[]{
-                kelas.getKodeKelas(),
-                kelas.getNamaPaket(),
-                kelas.getJadwalFormatted(),
-                kelas.getStatusKuota()
+                k.getKodeKelas(), k.getNamaPaket(), k.getJadwalFormatted(), k.getStatusKuota()
             });
         }
     }
 
     private void resetForm() {
-        txtNama.setText("");
-        txtTelepon.setText("");
-        txtEmail.setText("");
+        txtNama.setText(""); txtTelepon.setText(""); txtEmail.setText("");
         cmbKelas.setSelectedIndex(0);
         updateDetailKelas();
         txtNama.requestFocus();
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">
-    private void initComponents() {
-
-        pnlHeader = new javax.swing.JPanel();
-        lblTitle = new javax.swing.JLabel();
-        pnlForm = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        txtNama = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        txtTelepon = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        txtEmail = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        cmbKelas = new javax.swing.JComboBox<>();
-        jLabel6 = new javax.swing.JLabel();
-        lblMenu = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        lblJadwal = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        lblKuota = new javax.swing.JLabel();
-        btnBooking = new javax.swing.JButton();
-        btnReset = new javax.swing.JButton();
-        pnlKelas = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tblKelas = new javax.swing.JTable();
-        pnlRiwayat = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblBooking = new javax.swing.JTable();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Booking Kelas Memasak");
-        setPreferredSize(new java.awt.Dimension(900, 700));
-
-        pnlHeader.setBackground(new java.awt.Color(52, 73, 94));
-
-        lblTitle.setFont(new java.awt.Font("Segoe UI", 1, 22)); // NOI18N
-        lblTitle.setForeground(new java.awt.Color(255, 255, 255));
-        lblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitle.setText("BOOKING KELAS MEMASAK");
-
-        javax.swing.GroupLayout pnlHeaderLayout = new javax.swing.GroupLayout(pnlHeader);
-        pnlHeader.setLayout(pnlHeaderLayout);
-        pnlHeaderLayout.setHorizontalGroup(
-            pnlHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlHeaderLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 876, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        pnlHeaderLayout.setVerticalGroup(
-            pnlHeaderLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlHeaderLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        pnlForm.setBackground(new java.awt.Color(255, 255, 255));
-        pnlForm.setBorder(javax.swing.BorderFactory.createTitledBorder("Form Booking"));
-
-        jLabel2.setText("Nama Peserta:");
-        jLabel3.setText("No. Telepon:");
-        jLabel4.setText("Email:");
-        jLabel5.setText("Pilih Kelas:");
-        jLabel6.setText("Menu:");
-        jLabel7.setText("Jadwal:");
-        jLabel8.setText("Kuota:");
-
-        lblMenu.setText("-");
-        lblJadwal.setText("-");
-        lblKuota.setText("-");
-        lblKuota.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        btnBooking.setBackground(new java.awt.Color(39, 174, 96));
-        btnBooking.setForeground(new java.awt.Color(255, 255, 255));
-        btnBooking.setText("Booking Sekarang");
-        btnBooking.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBookingActionPerformed(evt);
-            }
-        });
-
-        btnReset.setBackground(new java.awt.Color(192, 57, 43));
-        btnReset.setForeground(new java.awt.Color(255, 255, 255));
-        btnReset.setText("Reset");
-        btnReset.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnResetActionPerformed(evt);
-            }
-        });
-
-        cmbKelas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbKelasActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout pnlFormLayout = new javax.swing.GroupLayout(pnlForm);
-        pnlForm.setLayout(pnlFormLayout);
-        pnlFormLayout.setHorizontalGroup(
-            pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlFormLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(pnlFormLayout.createSequentialGroup()
-                        .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel8))
-                        .addGap(18, 18, 18)
-                        .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtNama)
-                            .addComponent(txtTelepon)
-                            .addComponent(txtEmail)
-                            .addComponent(cmbKelas, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblJadwal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblKuota, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(pnlFormLayout.createSequentialGroup()
-                        .addComponent(btnBooking)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnReset)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        pnlFormLayout.setVerticalGroup(
-            pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlFormLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtTelepon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(cmbKelas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(lblMenu))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(lblJadwal))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(lblKuota))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(pnlFormLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnBooking)
-                    .addComponent(btnReset))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        pnlKelas.setBackground(new java.awt.Color(255, 255, 255));
-        pnlKelas.setBorder(javax.swing.BorderFactory.createTitledBorder("Daftar Kelas"));
-
-        tblKelas.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
-            new String [] {"Kode", "Nama Paket", "Jadwal", "Kuota"}
-        ));
-        jScrollPane1.setViewportView(tblKelas);
-
-        javax.swing.GroupLayout pnlKelasLayout = new javax.swing.GroupLayout(pnlKelas);
-        pnlKelas.setLayout(pnlKelasLayout);
-        pnlKelasLayout.setHorizontalGroup(
-            pnlKelasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlKelasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        pnlKelasLayout.setVerticalGroup(
-            pnlKelasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlKelasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        pnlRiwayat.setBackground(new java.awt.Color(255, 255, 255));
-        pnlRiwayat.setBorder(javax.swing.BorderFactory.createTitledBorder("Riwayat Booking"));
-
-        tblBooking.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {},
-            new String [] {"ID", "Nama", "Kelas", "Menu", "Tanggal", "Sisa Kuota"}
-        ));
-        jScrollPane2.setViewportView(tblBooking);
-
-        javax.swing.GroupLayout pnlRiwayatLayout = new javax.swing.GroupLayout(pnlRiwayat);
-        pnlRiwayat.setLayout(pnlRiwayatLayout);
-        pnlRiwayatLayout.setHorizontalGroup(
-            pnlRiwayatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlRiwayatLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 850, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        pnlRiwayatLayout.setVerticalGroup(
-            pnlRiwayatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlRiwayatLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(pnlHeader, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlRiwayat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(pnlForm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pnlKelas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(pnlHeader, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pnlForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnlKelas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pnlRiwayat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        pack();
-    }// </editor-fold>
-
-    private void btnBookingActionPerformed(java.awt.event.ActionEvent evt) {
-        prosesBooking();
+    private void showError(String pesan) {
+        JOptionPane.showMessageDialog(this, pesan, "Validasi", JOptionPane.ERROR_MESSAGE);
     }
-
-    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {
-        resetForm();
-    }
-
-    private void cmbKelasActionPerformed(java.awt.event.ActionEvent evt) {
-        updateDetailKelas();
-    }
-
-    // Variables declaration - do not modify
-    private javax.swing.JButton btnBooking;
-    private javax.swing.JButton btnReset;
-    private javax.swing.JComboBox<KelasMasak> cmbKelas;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel lblJadwal;
-    private javax.swing.JLabel lblKuota;
-    private javax.swing.JLabel lblMenu;
-    private javax.swing.JLabel lblTitle;
-    private javax.swing.JPanel pnlForm;
-    private javax.swing.JPanel pnlHeader;
-    private javax.swing.JPanel pnlKelas;
-    private javax.swing.JPanel pnlRiwayat;
-    private javax.swing.JTable tblBooking;
-    private javax.swing.JTable tblKelas;
-    private javax.swing.JTextField txtEmail;
-    private javax.swing.JTextField txtNama;
-    private javax.swing.JTextField txtTelepon;
-    // End of variables declaration
 }
